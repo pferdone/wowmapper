@@ -6,6 +6,10 @@
 *.o
 *.a
 *.so
+*.swp
+*.spec
 
 # ignored directories
-Debug/
+Debug/*
+Release/*
+libs/*

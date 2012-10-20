@@ -7,6 +7,7 @@ wowmapper is a hobby project which started in May 2010. It was one, if not the f
 
 wowmapper uses a couple of external libraries to do its job.
 Right now it's using the following:
-- FTLK is a cross-platform, lightweight GUI library. See http://www.fltk.org
-- StormLib enables wowmapper to access MPQ files to extract its content. See http://www.zezula.net/en/mpq/stormlib.html
-- GLM is my favorite OpenGL math library. See http://glm.g-truc.net/
+- FTLK (v1.3.0) is a cross-platform, lightweight GUI library. See http://www.fltk.org
+- StormLib (v8.20) enables wowmapper to access MPQ files to extract its content. See http://www.zezula.net/en/mpq/stormlib.html
+- GLM (v0.9.3.4) is my favorite OpenGL math library. See http://glm.g-truc.net/
+
