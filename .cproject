@@ -27,6 +27,7 @@
 								<option id="gnu.cpp.compiler.exe.debug.option.debugging.level.1257718838" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.263979434" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/home/pferdone/workspace/wowmapper/libs/StormLib/src"/>
+									<listOptionValue builtIn="false" value="/home/pferdone/workspace/wowmapper/libs/fltk-1.3.0/"/>
 									<listOptionValue builtIn="false" value="/home/pferdone/workspace/wowmapper/libs/glm-0.9.3.4/glm"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.293241365" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
@@ -42,6 +43,10 @@
 									<listOptionValue builtIn="false" value="/home/pferdone/workspace/wowmapper/libs/StormLib"/>
 								</option>
 								<option id="gnu.cpp.link.option.libs.1722230281" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
+									<listOptionValue builtIn="false" value="fltk"/>
+									<listOptionValue builtIn="false" value="X11"/>
+									<listOptionValue builtIn="false" value="Xext"/>
+									<listOptionValue builtIn="false" value="m"/>
 									<listOptionValue builtIn="false" value="Storm"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.385034871" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
@@ -130,5 +135,7 @@
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
 		</scannerConfigBuildInfo>
 	</storageModule>
-	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="refreshScope" versionNumber="1">
+		<resource resourceType="PROJECT" workspacePath="/wowmapper"/>
+	</storageModule>
 </cproject>

@@ -8,6 +8,8 @@
 *.so
 *.swp
 *.spec
+*.MPQ
+*.txt
 
 # ignored directories
 Debug/*
