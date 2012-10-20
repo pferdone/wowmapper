@@ -1,0 +1,11 @@
+# ignored extensions
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.a
+*.so
+
+# ignored directories
+Debug/
