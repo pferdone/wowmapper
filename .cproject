@@ -28,7 +28,10 @@
 								<option id="gnu.cpp.compiler.option.include.paths.263979434" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/home/pferdone/workspace/wowmapper/libs/StormLib/src"/>
 									<listOptionValue builtIn="false" value="/home/pferdone/workspace/wowmapper/libs/fltk-1.3.0/"/>
-									<listOptionValue builtIn="false" value="/home/pferdone/workspace/wowmapper/libs/glm-0.9.3.4/glm"/>
+									<listOptionValue builtIn="false" value="/home/pferdone/workspace/wowmapper/libs/glm-0.9.3.4/"/>
+								</option>
+								<option id="gnu.cpp.compiler.option.preprocessor.def.1066969534" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="_FILE_OFFSET_BITS=64"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.293241365" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>

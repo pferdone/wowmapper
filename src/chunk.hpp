@@ -9,6 +9,9 @@
 #define CHUNK_HPP_
 
 #include <stdint.h>
+#include <vector>
+
+typedef std::vector<uint8_t> Buffer_t;
 
 /**
  * Struct to read receive information all chunks share.
@@ -20,6 +23,12 @@ struct ChunkInfo_s
   uint32_t size;
 };
 #pragma pack(pop)
+
+struct Chunk_s
+{
+  ChunkInfo_s info;
+  Buffer_t buffer;
+};
 
 
 #endif /* CHUNK_HPP_ */

@@ -10,4 +10,5 @@ Right now it's using the following:
 - FTLK (v1.3.0) is a cross-platform, lightweight GUI library. See http://www.fltk.org
 - StormLib (v8.20) enables wowmapper to access MPQ files to extract its content. See http://www.zezula.net/en/mpq/stormlib.html
 - GLM (v0.9.3.4) is my favorite OpenGL math library. See http://glm.g-truc.net/
+- Boost (v1.46.1). See http://www.boost.org/
 
