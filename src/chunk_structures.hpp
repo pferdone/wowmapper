@@ -8,11 +8,66 @@
 #ifndef CHUNK_STRUCTURES_HPP_
 #define CHUNK_STRUCTURES_HPP_
 
+#include <stdint.h>
+#include <vector>
+#include <string>
+#include <map>
+#include <list>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_precision.hpp>
 
+// general typedefs
 typedef uint32_t Offset_t;
+typedef std::vector<uint8_t> Buffer_t;
 
+
+/**
+ * General chunk header.
+ */
+#pragma pack(push, 1)
+struct ChunkHeader_s
+{
+  uint8_t id[4];
+  uint32_t size;
+};
+#pragma pack(pop)
+
+/**
+ * Contains valueable information and data about chunks.
+ */
+struct ChunkInfo_s
+{
+  std::string id;
+  Offset_t offset;
+  uint32_t size;
+  Buffer_t buffer;
+
+  /**
+   * Return buffer data as any type starting from given offset.
+   */
+  template<typename t>const t* get(Offset_t offset=0) const
+  {
+    return reinterpret_cast<const t*>(buffer.data()+offset);
+  }
+
+  /**
+   * Return data in buffer as vector of any type with a given amount of elements.
+   */
+  template<typename t>bool get(Offset_t offset, uint32_t num, std::vector<t> *vector) const
+  {
+    std::size_t size = sizeof(t);
+    if ((buffer.size()-offset)>=(num*size)) {
+      vector->resize(num);
+      memcpy(vector->data(), buffer.data()+offset, num*size);
+      return true;
+    }
+    return false;
+  }
+};
+
+/**
+ * MVER chunk.
+ */
 #pragma pack(push, 1)
 struct MVERstruct_s
 {
@@ -20,6 +75,9 @@ struct MVERstruct_s
 };
 #pragma pack(pop)
 
+/**
+ * MHDR chunk.
+ */
 #pragma pack(push, 1)
 struct MHDRstruct_s
 {
@@ -39,6 +97,30 @@ struct MHDRstruct_s
 };
 #pragma pack(pop)
 
+/**
+ * MCNK info. (deprecated)
+ */
+struct MCNKinfo_s
+{
+  Offset_t mcnk_off;
+  uint32_t size;
+  uint32_t flags;
+  uint32_t async_id;
+};
+
+/**
+ * MCIN chunk. (deprecated)
+ */
+#pragma pack(push, 1)
+struct MCINstruct_s
+{
+  MCNKinfo_s mcnks[256];
+};
+#pragma pack(pop)
+
+/**
+ * MCNK chunk.
+ */
 #pragma pack(push, 1)
 struct MCNKstruct_s
 {
@@ -71,13 +153,19 @@ struct MCNKstruct_s
 };
 #pragma pack(pop)
 
+/**
+ * MCVT chunk.
+ */
 #pragma pack(push, 1)
 struct MCVTstruct_s
 {
-  glm::vec3 heights[145];
+  float heights[145];
 };
 #pragma pack(pop)
 
+/**
+ * MCNR chunk.
+ */
 #pragma pack(push, 1)
 struct MCNRstruct_s
 {
@@ -85,6 +173,9 @@ struct MCNRstruct_s
 };
 #pragma pack(pop)
 
+/**
+ * MCLY chunk.
+ */
 #pragma pack(push, 1)
 struct MCLYstruct_s
 {

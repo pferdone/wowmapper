@@ -71,6 +71,8 @@ bool MPQUtil_c::openArchive(const std::string& filename, bool is_read_only)
 
 bool MPQUtil_c::readFile(const std::string& filename, Buffer_t* buffer)
 {
+  buffer->clear();
+
   for (HandleMap_t::iterator iter=_fileHandles.begin(); iter!=_fileHandles.end(); ++iter) {
     // open file
     HANDLE file_handle = 0;

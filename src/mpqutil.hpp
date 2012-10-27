@@ -33,19 +33,17 @@ class MPQUtil_c {
     /**
      * Opens an archive and adds its HANDLE to the file handle map on success.
      * Also retrieves the listfile from a MPQ.
-     *
-     * \param filename MPQ filename
-     * \param is_read_only wether or not to open it with read only flag
-     * \return Returns true if file can be opened and listfile could be read or if file is already open
+     * \param filename (in) MPQ filename
+     * \param is_read_only (in) wether or not to open it with read only flag
+     * \return Returns true if file can be opened and listfile could be read or if file is already open.
      */
     bool openArchive(const std::string &filename, bool is_read_only = true);
 
     /**
-     * Read a file of an open archive and output it to buffer.
-     *
-     * \param filename filename of a file inside any open archive
-     * \param buffer buffer to receive file data
-     * \return true if file could be read or false if it cannot be read or does not exist in any archive
+     * Read a file of an open archive and output it to a buffer. Buffer will be cleared when passed to function.
+     * \param filename (in) filename of a file inside any open archive
+     * \param buffer (Out) buffer to receive file data
+     * \return True if file could be read or false if it cannot be read or does not exist in any archive.
      */
     bool readFile(const std::string &filename, Buffer_t *buffer);
 

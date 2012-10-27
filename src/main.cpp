@@ -6,85 +6,97 @@
  */
 
 
-#include "chunk.hpp"
+#include <iostream>
 #include "mpqutil.hpp"
-#include <fstream>
-#include "chunk_structures.hpp"
+#include "chunk_helper.hpp"
+#include "terrain_constants.hpp"
+
+#include <irrlicht/irrlicht.h>
 
 
-typedef std::multimap<std::string, Chunk_s*> ChunkMap_t;
-typedef std::pair<std::string, Chunk_s*> ChunkPair_t;
+using namespace irr;
+using namespace core;
+using namespace scene;
+using namespace video;
+using namespace io;
+using namespace gui;
 
-void parse_buffer(Buffer_t::const_iterator begin, Buffer_t::const_iterator end, ChunkMap_t *chunk_map);
-bool find_first_chunk(const std::string &magic, const ChunkMap_t &map, Chunk_s **chunk);
-void save_buffer_to_file(const std::string &filename, const Buffer_t &buffer);
+std::vector<glm::vec3> vertices;
 
+void get_terrain(const ChunkInfo_s &mcnk_info, SMeshBuffer *mesh_buffer)
+{
+  const MCNKstruct_s *mcnk = mcnk_info.get<MCNKstruct_s>();
+
+  const MCVTstruct_s *mcvt = mcnk_info.get<MCVTstruct_s>(mcnk->mcvt_off);
+  vertices.insert(vertices.begin(), VERTICES.begin(), VERTICES.end());
+  const MCNRstruct_s *mcnr = mcnk_info.get<MCNRstruct_s>(mcnk->mcnr_off);
+
+  mesh_buffer->Vertices.set_used(VERTICES.size());
+  for (int i=0; i<145; i++) {
+    vertices[i].y = mcvt->heights[i];
+
+    mesh_buffer->Vertices[i].Pos.set(vertices[i].x, vertices[i].y, vertices[i].z);
+    mesh_buffer->Vertices[i].Normal.set(mcnr->normals[i].x/127.f, mcnr->normals[i].y/127.f, mcnr->normals[i].z/127.f);
+    mesh_buffer->Vertices[i].TCoords.set(TEXCOORDS[i].x, TEXCOORDS[i].y);
+    mesh_buffer->Vertices[i].Color.set(0xcccccc);
+  }
+
+  mesh_buffer->Indices.set_used(INDICES.size());
+  for (int i=0; i<768; i++) {
+    mesh_buffer->Indices[i] = INDICES[i];
+  }
+
+  mesh_buffer->recalculateBoundingBox();
+}
+
+/**
+ * Main function.
+ */
 int main(int argc, char **argv)
 {
   MPQUtil_c mpq_util;
-
-  Buffer_t file_buffer;
-  mpq_util.openArchive("expansion1.MPQ");
+  //mpq_util.openArchive("expansion1.MPQ");
   mpq_util.openArchive("expansion2.MPQ");
+
+  ChunkMap_t adt_map, obj0_map, obj1_map, tex0_map, tex1_map;
+  Buffer_t file_buffer;
+
   mpq_util.readFile("world\\maps\\Northrend\\Northrend_22_27.adt", &file_buffer);
+  parse_buffer(file_buffer.begin(), file_buffer.end(), &adt_map);
 
-  save_buffer_to_file("Northrend_22_27.adt", file_buffer);
 
-  ChunkMap_t adt_chunk_map;
-  parse_buffer(file_buffer.begin(), file_buffer.end(), &adt_chunk_map);
+  IrrlichtDevice *device = createDevice(EDT_OPENGL, dimension2d<u32>(640, 480), 16, false, true, false, 0);
+  device->setWindowCaption(L"wowmapper");
+  IVideoDriver *driver = device->getVideoDriver();
+  ISceneManager *smgr = device->getSceneManager();
 
-  /*Chunk_s *mhdr_chunk;
-  find_first_chunk("RDHM", adt_chunk_map, &mhdr_chunk);
-  MHDRstruct_s *mhdr = reinterpret_cast<MHDRstruct_s*>(mhdr_chunk->buffer.data());
+  ChunkList_t mcnk_list;
+  find_all_chunks("KNCM", adt_map, &mcnk_list);
+  for (ChunkList_t::const_iterator iter=mcnk_list.begin(); iter!=mcnk_list.end(); ++iter) {
+    // create mesh
+    SMesh *mesh = new SMesh();
+    SMeshBuffer *mesh_buffer = new SMeshBuffer();
+    mesh->addMeshBuffer(mesh_buffer);
+    SAnimatedMesh *amesh = new SAnimatedMesh();
+    amesh->addMesh(mesh);
+    IAnimatedMeshSceneNode *anode = smgr->addAnimatedMeshSceneNode(amesh);
+    anode->setMaterialFlag(EMF_BACK_FACE_CULLING, false);
 
-  Chunk_s *mcnk_chunk;
-  find_first_chunk("KNCM", adt_chunk_map, &mcnk_chunk);*/
+    //
+    const ChunkInfo_s *mcnk_info = reinterpret_cast<const ChunkInfo_s*>(*iter);
+    get_terrain(*mcnk_info, mesh_buffer);
+  }
 
-  Chunk_s *mver_chunk;
-  find_first_chunk("REVM", adt_chunk_map, &mver_chunk);
+  ICameraSceneNode *camera_node = smgr->addCameraSceneNodeFPS();
+  camera_node->setFarValue(20000.0f);
 
-  MVERstruct_s *mver = reinterpret_cast<MVERstruct_s*>(mver_chunk->buffer.data());
-  /*MCNKstruct_s *mcnk = reinterpret_cast<MCNKstruct_s*>(mcnk_chunk->buffer.data());
-  MCVTstruct_s *mcvt = reinterpret_cast<MCVTstruct_s*>(mcnk_chunk->buffer.data()+mcnk->mcvt_off);
-  MCNRstruct_s *mcnr = reinterpret_cast<MCNRstruct_s*>(mcnk_chunk->buffer.data()+mcnk->mcnr_off);
-  MCLYstruct_s *mcly = reinterpret_cast<MCLYstruct_s*>(mcnk_chunk->buffer.data()+mcnk->mcly_off);*/
+  while(device->run()) {
+    driver->beginScene(true, true, SColor(0xff000000));
+    smgr->drawAll();
+    driver->endScene();
+  }
 
-  std::cout << "MVER version: " << mver->version << std::endl;
+  device->drop();
 
   return 0;
-}
-
-void parse_buffer(Buffer_t::const_iterator begin, Buffer_t::const_iterator end, ChunkMap_t *chunk_map)
-{
-  Buffer_t::const_iterator iter = begin;
-  std::size_t ci_size = sizeof(ChunkInfo_s);
-  while (iter!=end) {
-    Chunk_s *chunk = new Chunk_s();
-
-    memcpy(&chunk->info, &(*iter), ci_size);
-    chunk->buffer.resize(chunk->info.size);
-    memcpy(chunk->buffer.data(), &(*(iter+ci_size)), chunk->info.size);
-
-    iter+=chunk->info.size+ci_size;
-
-    std::string magic(chunk->info.id, chunk->info.id+4);
-    chunk_map->insert(ChunkPair_t(magic, chunk));
-  }
-}
-
-bool find_first_chunk(const std::string &magic, const ChunkMap_t &map, Chunk_s **chunk)
-{
-  ChunkMap_t::const_iterator found = map.find(magic);
-  if (found!=map.end()) {
-    *chunk = found->second;
-    return true;
-  }
-
-  return false;
-}
-
-void save_buffer_to_file(const std::string &filename, const Buffer_t &buffer)
-{
-  std::ofstream os(filename.c_str());
-  os.write(reinterpret_cast<const char*>(buffer.data()), buffer.size());
 }
