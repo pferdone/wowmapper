@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?fileVersion 4.0.0?>
-
-<cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+<?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
 	<storageModule moduleId="org.eclipse.cdt.core.settings">
 		<cconfiguration id="cdt.managedbuild.config.gnu.exe.debug.1175669941">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.exe.debug.1175669941" moduleId="org.eclipse.cdt.core.settings" name="Debug">
@@ -26,9 +24,9 @@
 								<option id="gnu.cpp.compiler.exe.debug.option.optimization.level.1081462851" name="Optimization Level" superClass="gnu.cpp.compiler.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.exe.debug.option.debugging.level.1257718838" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.263979434" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="/home/pferdone/workspace/wowmapper/libs/StormLib/src"/>
-									<listOptionValue builtIn="false" value="/home/pferdone/workspace/wowmapper/libs/fltk-1.3.0/"/>
-									<listOptionValue builtIn="false" value="/home/pferdone/workspace/wowmapper/libs/glm-0.9.3.4/"/>
+									<listOptionValue builtIn="false" value="/home/pferdone/libraries/StormLib/src/"/>
+									<listOptionValue builtIn="false" value="/home/pferdone/libraries/irrlicht-1.7.3/include"/>
+									<listOptionValue builtIn="false" value="/home/pferdone/libraries/glm-0.9.3.4/"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.1066969534" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="_FILE_OFFSET_BITS=64"/>
@@ -48,6 +46,7 @@
 								</option>
 								<option id="gnu.cpp.link.option.libs.1722230281" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="Irrlicht"/>
+									<listOptionValue builtIn="false" value="X11"/>
 									<listOptionValue builtIn="false" value="GL"/>
 									<listOptionValue builtIn="false" value="Xxf86vm"/>
 									<listOptionValue builtIn="false" value="Storm"/>
@@ -59,6 +58,28 @@
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.exe.debug.87545538" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.940237529" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
+					<folderInfo id="cdt.managedbuild.config.gnu.exe.debug.1175669941.1569859387" name="/" resourcePath="src">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.1222213080" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.exe.debug" unusedChildren="">
+							<targetPlatform id="cdt.managedbuild.target.gnu.platform.exe.debug" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.debug"/>
+							<tool id="cdt.managedbuild.tool.gnu.archiver.base.179903181" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base.1052028640"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.507377749" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.277906048">
+								<option id="gnu.cpp.compiler.option.include.paths.1490854493" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="/home/pferdone/libraries/StormLib/src/"/>
+									<listOptionValue builtIn="false" value="/home/pferdone/libraries/irrlicht-1.7.3/include"/>
+									<listOptionValue builtIn="false" value="/home/pferdone/libraries/glm-0.9.3.4/"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1523913822" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1591689439" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.712898290">
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.189327499" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1713321312" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug.387769223"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.497495415" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1559468716"/>
+							<tool id="cdt.managedbuild.tool.gnu.assembler.exe.debug.892987772" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug.87545538">
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1502709185" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
 						</toolChain>
 					</folderInfo>
@@ -141,4 +162,5 @@
 	<storageModule moduleId="refreshScope" versionNumber="1">
 		<resource resourceType="PROJECT" workspacePath="/wowmapper"/>
 	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 </cproject>
