@@ -11,4 +11,5 @@ Right now it's using the following:
 - StormLib (v8.20) enables wowmapper to access MPQ files to extract its content. See http://www.zezula.net/en/mpq/stormlib.html
 - GLM (v0.9.3.4) is my favorite OpenGL math library. See http://glm.g-truc.net/
 - Boost (v1.46.1). See http://www.boost.org/
-
+- Irrlicht (v1.8) is a very flexible and easy to use engine. See http://irrlicht.sourceforge.net/
+- libsquish (v1.11) is able to deal with DXT1/3/5 images. See http://code.google.com/p/libsquish/
