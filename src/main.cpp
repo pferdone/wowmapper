@@ -7,12 +7,12 @@
 
 
 #include <iostream>
+#include <irrlicht/irrlicht.h>
+#include <IGPUProgrammingServices.h>
+#include "irrlicht/shader_callback.hpp"
 #include "mpqutil.hpp"
 #include "chunk_helper.hpp"
-#include "terrain_constants.hpp"
-
-#include <irrlicht/irrlicht.h>
-
+#include "adt_mesh.hpp"
 
 using namespace irr;
 using namespace core;
@@ -21,63 +21,111 @@ using namespace video;
 using namespace io;
 using namespace gui;
 
-std::vector<glm::vec3> vertices;
-
-void get_terrain(const ChunkInfo_s &mcnk_info, SMeshBuffer *mesh_buffer);
+void initIrrlicht(IrrlichtDevice **device, IVideoDriver **driver, ISceneManager **smgr);
+void createLight(ISceneManager *smgr, IVideoDriver *driver, const vector3df &pos);
+void createCamera(ISceneManager *smgr, const vector3df &pos);
 
 /**
  * Main function.
  */
 int main(int argc, char **argv)
 {
+  IrrlichtDevice *device = 0;
+  IVideoDriver *driver = 0;
+  ISceneManager *smgr = 0;
+  initIrrlicht(&device, &driver, &smgr);
+
   MPQUtil_c mpq_util;
-  //mpq_util.openArchive("expansion1.MPQ");
-  mpq_util.openArchive("expansion2.MPQ");
+  Buffer_t wdt_file_buffer;
+  ChunkMap_t wdt_map;
 
-  ChunkMap_t adt_map, obj0_map, obj1_map, tex0_map, tex1_map;
-  Buffer_t file_buffer;
+  // read WDT from MPQ
+  mpq_util.openArchive("data/texture.MPQ");
+  mpq_util.openArchive("data/expansion1.MPQ");
+  mpq_util.openArchive("data/expansion2.MPQ");
+  mpq_util.openArchive("data/expansion3.MPQ");
+  mpq_util.openArchive("data/expansion4.MPQ");
+  mpq_util.readFile("World\\Maps\\Northrend\\Northrend.wdt", &wdt_file_buffer);
+  parse_buffer(wdt_file_buffer.begin(), wdt_file_buffer.end(), &wdt_map);
 
-  mpq_util.readFile("world\\maps\\Northrend\\Northrend_22_28.adt", &file_buffer);
-  parse_buffer(file_buffer.begin(), file_buffer.end(), &adt_map);
+  // get areas
+  ChunkInfo_s *chunk_info;
+  find_first_chunk("NIAM", wdt_map, &chunk_info);
+  const MAINstruct_s *main = chunk_info->get<MAINstruct_s>();
+
+  std::string area("World\\Maps\\Northrend\\Northrend");
+  aabbox3df bb;
+
+  int i=0;
+  for (int y=25;y<28;y++) {
+    for (int x=25;x<28;x++) {
+      if (main->info[y*64+x].flags & 0x1) {
+        //char adt_fn[128], tex0_fn[128];
+        //sprintf(adt_fn, "%s_%02d_%02d.adt", area.c_str(), x, y);
+
+//        ChunkMap_t adt_map, tex0_map;
+//        Buffer_t adt_fb, tex0_fb;
+//        // read ADT from MPQ
+//        mpq_util.readFile(adt_fn, &adt_fb);
+//        parse_buffer(adt_fb.begin(), adt_fb.end(), &adt_map);
+//        mpq_util.readFile(tex0_fn, &tex0_fb);
+//        parse_buffer(tex0_fb.begin(), tex0_fb.end(), &tex0_map, true);
+//
+//        // create mesh from ADT
+//        ADTMesh_c *adt_mesh = new ADTMesh_c(smgr);
+//        ChunkList_t mcnk_list;
+//        find_all_chunks("KNCM", adt_map, &mcnk_list);
+//        adt_mesh->initTerrain(mcnk_list);
+//        adt_mesh->initTerrainTextures(tex0_map, tex0_map);
+//
+//        bb = adt_mesh->getBoundingBox();
+
+        char adt_fn[128], tex0_fn[128], tex1_fn[128], obj0_fn[128], obj1_fn[128];
+        Buffer_t adt_fb, tex0_fb, tex1_fb, obj0_fb, obj1_fb;
+        ChunkMap_t adt_map, tex0_map, tex1_map, obj0_map, obj1_map;
+
+        // create filenames
+        sprintf(adt_fn, "%s_%02d_%02d.adt", area.c_str(), x, y);
+        sprintf(tex0_fn, "%s_%02d_%02d_tex0.adt", area.c_str(), x, y);
+        sprintf(tex1_fn, "%s_%02d_%02d_tex1.adt", area.c_str(), x, y);
+        sprintf(obj0_fn, "%s_%02d_%02d_obj0.adt", area.c_str(), x, y);
+        sprintf(obj1_fn, "%s_%02d_%02d_obj1.adt", area.c_str(), x, y);
+
+        // read files into buffer
+        mpq_util.readFile(adt_fn, &adt_fb);
+        mpq_util.readFile(tex0_fn, &tex0_fb);
+        //mpq_util.readFile(tex1_fn, &tex1_fb);
+        //mpq_util.readFile(obj0_fn, &obj0_fb);
+        //mpq_util.readFile(obj1_fn, &obj1_fb);
+
+        // parse chunks
+        parse_buffer(adt_fb.begin(), adt_fb.end(), &adt_map);
+        parse_buffer(tex0_fb.begin(), tex0_fb.end(), &tex0_map, true);
+        //parse_buffer(tex1_fb.begin(), tex1_fb.end(), &tex1_map, true);
+        //parse_buffer(obj0_fb.begin(), obj0_fb.end(), &obj0_map, true);
+        //parse_buffer(obj1_fb.begin(), obj1_fb.end(), &obj1_map, true);
+
+        ADTMesh_c *adt_mesh = new ADTMesh_c(smgr, driver, &mpq_util);
+        ChunkList_t mcnk_list;
+        find_all_chunks("KNCM", adt_map, &mcnk_list);
+        adt_mesh->initTerrain(mcnk_list);
+        adt_mesh->initTerrainTextures(tex0_map);
+        bb = adt_mesh->getBoundingBox();
 
 
-  IrrlichtDevice *device = createDevice(EDT_OPENGL, dimension2d<u32>(640, 480), 16, false, true, false, 0);
-  device->setWindowCaption(L"wowmapper");
-  ISceneManager *smgr = device->getSceneManager();
-
-  ChunkList_t mcnk_list;
-  find_all_chunks("KNCM", adt_map, &mcnk_list);
-  vector3df pos;
-
-  for (ChunkList_t::const_iterator iter=mcnk_list.begin(); iter!=mcnk_list.end(); ++iter) {
-    // create mesh
-    SMesh *mesh = new SMesh();
-    SMeshBuffer *mesh_buffer = new SMeshBuffer();
-    mesh->addMeshBuffer(mesh_buffer);
-    IMeshSceneNode *mesh_node = smgr->addMeshSceneNode(mesh);
-    mesh_node->setMaterialFlag(EMF_BACK_FACE_CULLING, false);
-
-    const ChunkInfo_s *mcnk_info = reinterpret_cast<const ChunkInfo_s*>(*iter);
-    const MCNKstruct_s *mcnk = mcnk_info->get<MCNKstruct_s>();
-    get_terrain(*mcnk_info, mesh_buffer);
-
-    pos.set(-mcnk->position.y, mcnk->position.z, -mcnk->position.x);
-    mesh_node->setPosition(pos);
+      }
+    }
   }
 
-  //aabbox3d<f32> bbox = smgr->getRootSceneNode()->getBoundingBox();
+  vector3df pos = bb.getCenter();
+  pos.set(pos.X, pos.Y+1500, pos.Z);
 
+  createLight(smgr, driver, pos);
+  createCamera(smgr, pos);
 
-  ILightSceneNode *light_node = smgr->addLightSceneNode();
-  light_node->setPosition(pos);
-  ICameraSceneNode *camera_node = smgr->addCameraSceneNodeFPS();
-  camera_node->setFarValue(20000.0f);
-  camera_node->setPosition(pos);
-
-  IVideoDriver *driver = device->getVideoDriver();
 
   while(device->run()) {
-    driver->beginScene(true, true, SColor(0xffffffff));
+    driver->beginScene(true, true, SColor(0xffA7AFE8));
     smgr->drawAll();
     driver->endScene();
   }
@@ -87,27 +135,35 @@ int main(int argc, char **argv)
   return 0;
 }
 
-void get_terrain(const ChunkInfo_s &mcnk_info, SMeshBuffer *mesh_buffer)
+void initIrrlicht(IrrlichtDevice **device, IVideoDriver **driver, ISceneManager **smgr)
 {
-  const MCNKstruct_s *mcnk = mcnk_info.get<MCNKstruct_s>();
-  const MCVTstruct_s *mcvt = mcnk_info.get<MCVTstruct_s>(mcnk->mcvt_off);
-  const MCNRstruct_s *mcnr = mcnk_info.get<MCNRstruct_s>(mcnk->mcnr_off);
+  *device = createDevice(EDT_OPENGL, dimension2d<u32>(800, 600), 16, false, true, false, 0);
+  *driver = (*device)->getVideoDriver();
+  *smgr = (*device)->getSceneManager();
 
-  vertices.insert(vertices.begin(), VERTICES.begin(), VERTICES.end());
+  (*device)->setWindowCaption(L"wowmapper");
 
-  mesh_buffer->Vertices.set_used(VERTICES.size());
-  for (int i=0; i<145; i++) {
-    vertices[i].y = mcvt->heights[i];
-    mesh_buffer->Vertices[i].Pos.set(vertices[i].x, vertices[i].y, vertices[i].z);
-    mesh_buffer->Vertices[i].Normal.set(mcnr->normals[i].x/127.f, mcnr->normals[i].y/127.f, mcnr->normals[i].z/127.f);
-    mesh_buffer->Vertices[i].TCoords.set(TEXCOORDS[i].x, TEXCOORDS[i].y);
-    mesh_buffer->Vertices[i].Color.set(0xcccccc);
-  }
+  IGPUProgrammingServices *gpu = (*driver)->getGPUProgrammingServices();
+  irr::s32 mat_type0 = gpu->addHighLevelShaderMaterialFromFiles(
+    "shader.vert", "vertexMain", EVST_VS_1_1,
+    "shader.frag", "pixelMain", EPST_PS_1_1,
+    new ShaderCallback_c(), EMT_SOLID, 0, EGSL_DEFAULT
+  );
+}
 
-  mesh_buffer->Indices.set_used(INDICES.size());
-  for (int i=0; i<768; i++) {
-    mesh_buffer->Indices[i] = INDICES[i];
-  }
+void createLight(ISceneManager *smgr, IVideoDriver *driver, const vector3df &pos)
+{
+  ILightSceneNode *light_node = smgr->addLightSceneNode(0, pos, SColorf(1,1,1,1), 500);
+  ISceneNode *bb_node = smgr->addBillboardSceneNode(light_node, dimension2df(60,60));
+  bb_node->setMaterialFlag(EMF_LIGHTING, false);
+  bb_node->setMaterialFlag(EMF_ZWRITE_ENABLE, false);
+  bb_node->setMaterialType(EMT_TRANSPARENT_ADD_COLOR);
+  bb_node->setMaterialTexture(0, driver->getTexture("particlewhite.bmp"));
+}
 
-  mesh_buffer->recalculateBoundingBox();
+void createCamera(ISceneManager *smgr, const vector3df &pos)
+{
+  ICameraSceneNode *camera_node = smgr->addCameraSceneNodeFPS();
+  camera_node->setFarValue(20000.0f);
+  camera_node->setPosition(pos);
 }

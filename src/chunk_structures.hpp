@@ -21,6 +21,13 @@ typedef uint32_t Offset_t;
 typedef std::vector<uint8_t> Buffer_t;
 
 
+struct ChunkInfo_s;
+// chunk related containers
+typedef std::multimap<std::string, ChunkInfo_s*> ChunkMap_t;
+typedef std::pair<std::string, ChunkInfo_s*> ChunkPair_t;
+typedef std::list<ChunkInfo_s*> ChunkList_t;
+
+
 /**
  * General chunk header.
  */
@@ -41,6 +48,7 @@ struct ChunkInfo_s
   Offset_t offset;
   uint32_t size;
   Buffer_t buffer;
+  ChunkMap_t sub_chunks;
 
   /**
    * Return buffer data as any type starting from given offset.
@@ -184,6 +192,27 @@ struct MCLYstruct_s
   Offset_t off_in_mcal;
   uint16_t effect_id;
   uint16_t padding;
+};
+#pragma pack(pop)
+
+/**
+ * Area info.
+ */
+#pragma pack(push, 1)
+struct AreaInfo_s
+{
+  uint32_t flags;
+  uint32_t area;
+};
+#pragma pack(pop)
+
+/**
+ * MAIN chunk.
+ */
+#pragma pack(push, 1)
+struct MAINstruct_s
+{
+  AreaInfo_s info[4096];
 };
 #pragma pack(pop)
 

@@ -11,8 +11,14 @@
 *.MPQ
 *.txt
 *.adt
+*.bmp
+*.blp
+
+# ignored files
+data
 
 # ignored directories
 Debug/*
 Release/*
 libs/*
+data/
